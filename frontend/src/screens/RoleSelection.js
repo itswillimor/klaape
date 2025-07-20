@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   Platform,
+  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -44,73 +45,84 @@ const RoleSelection = () => {
   };
   
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Role</Text>
-      <Text style={styles.subtitle}>How do you want to use Klaape?</Text>
-      
-      <View style={styles.cardContainer}>
-        {/* Regular User */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => handlePress("Regular User")}
-        >
-          <View style={[
-            styles.card,
-            selected === "Regular User" && styles.selectedCard
-          ]}>
-            <Text style={styles.cardText}>Regular User</Text>
-          </View>
-        </TouchableOpacity>
+    <ImageBackground 
+      source={require('../../assets/images/splash-icon.png')} 
+      style={styles.container}
+      resizeMode="cover"
+    >
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Choose Your Role</Text>
+        <Text style={styles.subtitle}>How do you want to use Klaape?</Text>
+        
+        <View style={styles.cardContainer}>
+          {/* Regular User */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handlePress("Regular User")}
+          >
+            <View style={[
+              styles.card,
+              selected === "Regular User" && styles.selectedCard
+            ]}>
+              <Text style={styles.cardText}>Regular User</Text>
+            </View>
+          </TouchableOpacity>
 
-        {/* Pro Creator */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => handlePress("Pro Creator")}
-        >
-          <View style={[
-            styles.card,
-            selected === "Pro Creator" && styles.selectedCard
-          ]}>
-            <Text style={styles.cardText}>Pro Creator</Text>
-          </View>
-        </TouchableOpacity>
+          {/* Pro Creator */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handlePress("Pro Creator")}
+          >
+            <View style={[
+              styles.card,
+              selected === "Pro Creator" && styles.selectedCard
+            ]}>
+              <Text style={styles.cardText}>Pro Creator</Text>
+            </View>
+          </TouchableOpacity>
 
-        {/* Business */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => handlePress("Business")}
-        >
-          <View style={[
-            styles.card,
-            selected === "Business" && styles.selectedCard
-          ]}>
-            <Text style={styles.cardText}>Business</Text>
-          </View>
-        </TouchableOpacity>
+          {/* Business */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handlePress("Business")}
+          >
+            <View style={[
+              styles.card,
+              selected === "Business" && styles.selectedCard
+            ]}>
+              <Text style={styles.cardText}>Business</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Continue Button */}
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          <TouchableOpacity
+            style={[styles.continueButton, !selected && styles.disabledButton]}
+            activeOpacity={0.8}
+            onPress={handleContinue}
+            disabled={!selected}
+          >
+            <Text style={styles.continueText}>Continue</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
-
-      {/* Continue Button */}
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <TouchableOpacity
-          style={[styles.continueButton, !selected && styles.disabledButton]}
-          activeOpacity={0.8}
-          onPress={handleContinue}
-          disabled={!selected}
-        >
-          <Text style={styles.continueText}>Continue</Text>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#0A0015",
+    backgroundColor: "rgba(10, 0, 21, 0.85)",
   },
   title: {
     fontSize: 28,
@@ -138,10 +150,17 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, 0.1)",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   selectedCard: {
     borderWidth: 3,
     borderColor: "#FFD700",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5,
   },
   cardText: {
     color: "#fff",
@@ -153,10 +172,16 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 15,
     paddingHorizontal: 80,
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 5,
   },
   disabledButton: {
     backgroundColor: "#999",
     opacity: 0.7,
+    shadowOpacity: 0,
   },
   continueText: {
     color: "#000",

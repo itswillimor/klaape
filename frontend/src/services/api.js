@@ -1,7 +1,24 @@
 // API service for Klaape app
 // This will connect to your Django backend
 
-const API_URL = 'http://localhost:8000/api'; // Change this to your actual API URL
+// Determine the API URL based on the environment
+const getApiUrl = () => {
+  // Check if we're in a GitHub Codespace
+  if (process.env.CODESPACE_NAME) {
+    return `https://${process.env.CODESPACE_NAME}-8000.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}/api`;
+  }
+  
+  // Check if we're in Expo Go on a physical device
+  if (process.env.EXPO_RUNTIME_ENV === 'expo') {
+    // Use your computer's local network IP address when testing on a physical device
+    // Example: return 'http://192.168.1.100:8000/api';
+  }
+  
+  // Default for local development
+  return 'http://localhost:8000/api';
+};
+
+const API_URL = getApiUrl();
 
 // Helper function for making API requests
 const fetchAPI = async (endpoint, options = {}) => {
@@ -53,7 +70,12 @@ const getAuthToken = async () => {
 export const profileAPI = {
   // Get user profile
   getProfile: async (userId) => {
-    return fetchAPI(`/users/${userId}/profile/`);
+    try {
+      return await fetchAPI(`/users/${userId}/profile/`);
+    } catch (error) {
+      console.log('Profile not found or API not available');
+      return null;
+    }
   },
   
   // Update user profile
@@ -116,7 +138,31 @@ export const authAPI = {
   },
 };
 
+// Role API methods
+export const roleAPI = {
+  // Get available roles
+  getRoles: async () => {
+    try {
+      return await fetchAPI('/roles/');
+    } catch (error) {
+      console.log('Could not fetch roles, using defaults');
+      return ['regular', 'pro', 'business'];
+    }
+  },
+  
+  // Get role details
+  getRoleDetails: async (roleId) => {
+    try {
+      return await fetchAPI(`/roles/${roleId}/`);
+    } catch (error) {
+      console.log('Could not fetch role details');
+      return null;
+    }
+  },
+};
+
 export default {
   profile: profileAPI,
   auth: authAPI,
+  role: roleAPI,
 };

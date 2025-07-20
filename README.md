@@ -28,7 +28,7 @@ A platform connecting users with professional creators and businesses.
 
 - Node.js (v18+)
 - Python (v3.10+)
-- PostgreSQL
+- PostgreSQL (optional, SQLite for development)
 - Redis (for WebSockets and caching)
 
 ### Backend Setup
@@ -54,7 +54,12 @@ A platform connecting users with professional creators and businesses.
    python manage.py migrate
    ```
 
-5. Start the development server:
+5. Create a superuser:
+   ```
+   python manage.py createsuperuser
+   ```
+
+6. Start the development server:
    ```
    python manage.py runserver
    ```
@@ -83,85 +88,95 @@ A platform connecting users with professional creators and businesses.
    npm run web     # Run in web browser
    ```
 
-## Testing
+## Features
 
-### Backend Tests
+### User Roles
 
-```
-cd backend
-python manage.py test
-```
+- **Regular User**: Browse content, follow creators, and interact with the community
+- **Pro Creator**: Monetize content, host live sessions, and build a following
+- **Business**: Team management, business tools, and professional services
 
-### Frontend Tests
+### Core Functionality
 
-```
-cd frontend
-npm test
-```
+- User profile management
+- Content creation and sharing
+- Monetization for creators
+- Live sessions ("Ask a Pro")
+- Marketplace for services
 
-## Deployment
+## Technical Architecture
 
-The project uses GitHub Actions for CI/CD. Push to the `main` branch to trigger a production deployment.
+### Backend (Django + DRF)
 
-## GitHub Integration
+- Strong API layer for mobile apps
+- Built-in auth, permissions, and session management
+- DRF simplifies pagination, serialization, and JWT/OAuth for mobile login
 
-1. Create a new GitHub repository
-2. Initialize the local repository:
-   ```
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-3. Link to your GitHub repository:
-   ```
-   git remote add origin https://github.com/yourusername/klaape.git
-   git push -u origin main
-   ```
+### Database (PostgreSQL)
 
-## Running in GitHub Codespaces
+- Handles complex relational data:
+  - Users ↔ Followers
+  - Posts ↔ Comments ↔ Likes
+  - Transactions ↔ Creators
+- JSON fields for flexible metadata
+- Indexes for query performance
 
-1. Open your repository in GitHub Codespaces:
-   - Go to your GitHub repository
-   - Click the "Code" button
-   - Select the "Codespaces" tab
-   - Click "Create codespace on main"
+### Real-time Features (Redis + WebSockets)
 
-2. Once the Codespace is ready, run the frontend:
-   ```
-   cd frontend
-   npm run codespace
-   ```
+- Redis for:
+  - Caching (feeds, trending content)
+  - Celery broker (background tasks)
+- WebSockets for:
+  - Live sessions
+  - Presence tracking
+  - Real-time notifications
 
-3. Connect devices:
-   - **Web**: Click the "Open in Browser" button in the ports tab for port 19002
-   - **Mobile devices**: Scan the QR code shown in the terminal with the Expo Go app
-   - **Emulators**: Use the local IP address shown in the terminal
+### Media Processing
 
-4. Run the backend in a separate terminal:
-   ```
-   cd backend
-   python manage.py runserver 0.0.0.0:8000
-   ```
+- FFmpeg + Celery workers:
+  - Video compression for fast delivery
+  - Generate thumbnails and adaptive streaming formats
+  - Store in AWS S3 or DigitalOcean Spaces for global CDN delivery
+
+### Payment Processing
+
+- Stripe Connect for:
+  - User payments (monetized content, live sessions)
+  - Creator payouts
+  - Supports multiple regions and currencies
 
 ## Development Workflow
 
-1. Create a feature branch:
+### Local Development
+
+1. Set up the development environment:
+   ```
+   ./setup-dev.sh
+   ```
+
+2. Create a feature branch:
    ```
    git checkout -b feature/your-feature-name
    ```
 
-2. Make your changes and commit:
+3. Make your changes and push to GitHub:
    ```
-   git add .
-   git commit -m "Add your feature"
+   ./push-to-github.sh "Your commit message"
    ```
-
-3. Push to GitHub:
-   ```
-   git push origin feature/your-feature-name
-   ```
+   Or just run `./push-to-github.sh` and you'll be prompted for a commit message.
 
 4. Create a Pull Request on GitHub
+
+### GitHub Codespaces
+
+1. Open the project in GitHub Codespaces
+
+2. Sync with the latest changes:
+   ```
+   ./sync-codespace.sh
+   ```
+
+3. Follow the setup instructions in `.devcontainer/README.md`
 
 ## License
 
