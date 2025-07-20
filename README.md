@@ -118,6 +118,31 @@ The project uses GitHub Actions for CI/CD. Push to the `main` branch to trigger 
    git push -u origin main
    ```
 
+## Running in GitHub Codespaces
+
+1. Open your repository in GitHub Codespaces:
+   - Go to your GitHub repository
+   - Click the "Code" button
+   - Select the "Codespaces" tab
+   - Click "Create codespace on main"
+
+2. Once the Codespace is ready, run the frontend:
+   ```
+   cd frontend
+   npm run codespace
+   ```
+
+3. Connect devices:
+   - **Web**: Click the "Open in Browser" button in the ports tab for port 19002
+   - **Mobile devices**: Scan the QR code shown in the terminal with the Expo Go app
+   - **Emulators**: Use the local IP address shown in the terminal
+
+4. Run the backend in a separate terminal:
+   ```
+   cd backend
+   python manage.py runserver 0.0.0.0:8000
+   ```
+
 ## Development Workflow
 
 1. Create a feature branch:
