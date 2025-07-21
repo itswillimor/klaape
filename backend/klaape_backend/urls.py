@@ -20,13 +20,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
-from klaape_users.views import UserProfileViewSet, user_profile, upload_profile_image
+from klaape_users.views import UserProfileViewSet, user_profile, upload_profile_image, signup, login_user
+from .views import api_root
 
 # API Router
 router = routers.DefaultRouter()
 router.register(r'profiles', UserProfileViewSet)
 
 urlpatterns = [
+    path('', api_root, name='api_root'),
     path("admin/", admin.site.urls),
     
     # API endpoints
@@ -36,6 +38,8 @@ urlpatterns = [
     
     # Authentication
     path('api/auth/', include('rest_framework.urls')),
+    path('api/signup/', signup, name='signup'),
+    path('api/login/', login_user, name='login'),
 ]
 
 # Serve media files in development

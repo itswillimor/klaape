@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform, KeyboardAvoidingView, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Platform, KeyboardAvoidingView, Keyboard, ActivityIndicator, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const colors = {
@@ -100,40 +100,105 @@ export default function Auth({ navigation, route }) {
   const handleSubmit = async () => {
     setIsLoading(true);
     
-    if (isLogin) {
-      if (!loginUsername || !password) {
-        Alert.alert('Error', 'Please enter your username and password');
-        setIsLoading(false);
-        return;
+    try {
+      if (isLogin) {
+        if (!loginUsername || !password) {
+          Alert.alert('Error', 'Please enter your username and password');
+          setIsLoading(false);
+          return;
+        }
+        
+        console.log('[LOGIN] Attempting login for:', loginUsername);
+        
+        // Login API call via localtunnel
+        const response = await fetch('https://d9a318da57e4.ngrok-free.app/api/login/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: loginUsername,
+            password: password
+          })
+        });
+        
+        console.log('[LOGIN] Response status:', response.status);
+        const responseText = await response.text();
+        console.log('[LOGIN] Response text:', responseText);
+        
+        let data;
+        try {
+          data = responseText ? JSON.parse(responseText) : {};
+        } catch (e) {
+          console.log('[LOGIN] JSON parse error:', e);
+          data = { error: 'Invalid response from server' };
+        }
+        console.log('[LOGIN] Response data:', data);
+        
+        if (response.ok) {
+          Alert.alert('Success', 'Logged in successfully!', [
+            { text: 'OK', onPress: () => navigation.navigate('RoleSelection') }
+          ]);
+        } else {
+          Alert.alert('Error', data.error || 'Login failed');
+        }
+      } else {
+        if (!username || !firstName || !lastName || !email || !password) {
+          Alert.alert('Error', 'Please fill in all fields');
+          setIsLoading(false);
+          return;
+        }
+        
+        if (!agreeToTerms) {
+          Alert.alert('Error', 'Please agree to Terms and Conditions');
+          setIsLoading(false);
+          return;
+        }
+        
+        console.log('[SIGNUP] Attempting signup for:', username, email);
+        
+        // Signup API call via localtunnel
+        const response = await fetch('https://d9a318da57e4.ngrok-free.app/api/signup/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            email: email,
+            password: password,
+            first_name: firstName,
+            last_name: lastName
+          })
+        });
+        
+        console.log('[SIGNUP] Response status:', response.status);
+        const responseText = await response.text();
+        console.log('[SIGNUP] Response text:', responseText);
+        
+        let data;
+        try {
+          data = responseText ? JSON.parse(responseText) : {};
+        } catch (e) {
+          console.log('[SIGNUP] JSON parse error:', e);
+          data = { error: 'Invalid response from server' };
+        }
+        console.log('[SIGNUP] Response data:', data);
+        
+        if (response.ok) {
+          Alert.alert('Success', 'Account created successfully!', [
+            { text: 'OK', onPress: () => navigation.navigate('RoleSelection') }
+          ]);
+        } else {
+          const errorMsg = data.username?.[0] || data.email?.[0] || 'Signup failed';
+          Alert.alert('Error', errorMsg);
+        }
       }
-      
-      // Simulate login
-      setTimeout(() => {
-        setIsLoading(false);
-        Alert.alert('Success', 'Logged in successfully!', [
-          { text: 'OK', onPress: () => navigation.navigate('RoleSelection') }
-        ]);
-      }, 1000);
-    } else {
-      if (!username || !firstName || !lastName || !email || !password) {
-        Alert.alert('Error', 'Please fill in all fields');
-        setIsLoading(false);
-        return;
-      }
-      
-      if (!agreeToTerms) {
-        Alert.alert('Error', 'Please agree to Terms and Conditions');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Simulate signup
-      setTimeout(() => {
-        setIsLoading(false);
-        Alert.alert('Success', 'Account created successfully!', [
-          { text: 'OK', onPress: () => navigation.navigate('RoleSelection') }
-        ]);
-      }, 1000);
+    } catch (error) {
+      console.log('[ERROR]', error);
+      Alert.alert('Error', 'Network error. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -155,6 +220,10 @@ export default function Auth({ navigation, route }) {
         <View style={styles.content}>
           {/* Header */}
           <View style={styles.header}>
+            <Image 
+              source={{ uri: "https://ik.imagekit.io/ynb2ey9lj/DC9F20C3-E296-4AED-AE99-4A0DF06B0B92.PNG?updatedAt=1752848603287" }}
+              style={styles.logo}
+            />
             <Text style={styles.title}>
               {isLogin ? 'Klaape In' : 'Join Klaape'}
             </Text>
@@ -374,6 +443,12 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 40,
     alignItems: 'center'
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+    marginBottom: 20
   },
   title: { 
     fontSize: 32, 

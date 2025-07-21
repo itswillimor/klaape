@@ -1,124 +1,126 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Image, ImageBackground } from 'react-native';
-import { useFonts, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, Image, StyleSheet, Animated, Dimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width, height } = Dimensions.get("window");
 
 export default function Splash({ navigation }) {
-  const [fontsLoaded] = useFonts({
-    Poppins_700Bold,
-  });
-  const [currentBg, setCurrentBg] = useState(0);
+  const [typingText, setTypingText] = useState("");
+  const finalText = "Connect. Create. Earn.";
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const words = ["Connect. ", "Create. ", "Earn."];
 
-  const lavaAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
-  const logoScale = useRef(new Animated.Value(0)).current;
-
-  const backgrounds = [
-    "https://ik.imagekit.io/ynb2ey9lj/8AE953F0-6177-4DF6-B9A3-8C32C2A172E1%203.PNG?updatedAt=1752784207195",
-    "https://ik.imagekit.io/ynb2ey9lj/55B856AC-0371-4B3D-B2DA-720958A4C017%203.PNG?updatedAt=1752848603251"
-  ];
-  const logo = "https://ik.imagekit.io/ynb2ey9lj/DC9F20C3-E296-4AED-AE99-4A0DF06B0B92.PNG?updatedAt=1752848603287";
+  const text1Opacity = useRef(new Animated.Value(0)).current;
+  const text2Opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Logo entrance animation
-    Animated.spring(logoScale, {
-      toValue: 1,
-      friction: 4,
-      useNativeDriver: true,
-    }).start();
-
-    // Pulsing effect
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    // Golden glow
-    const glow = Animated.loop(
-      Animated.timing(glowAnim, {
+    // Fade in "What's Klaapening?"
+    Animated.sequence([
+      Animated.delay(1000),
+      Animated.timing(text1Opacity, {
         toValue: 1,
-        duration: 3000,
+        duration: 800,
         useNativeDriver: true,
-      })
-    );
-
-    pulse.start();
-    glow.start();
-
-    // Switch backgrounds
-    const bgTimer = setTimeout(() => {
-      setCurrentBg(1);
-    }, 2000);
-
-    const timer = setTimeout(() => {
-      navigation.replace('Auth');
-    }, 4000);
-    
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(bgTimer);
-      pulse.stop();
-      glow.stop();
-    };
+      }),
+      Animated.delay(2000),
+      Animated.timing(text1Opacity, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(text2Opacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start(() => startTypingEffect());
   }, []);
 
-  if (!fontsLoaded) {
-    return null;
-  }
+  const startTypingEffect = () => {
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < finalText.length) {
+        setTypingText(finalText.substring(0, i + 1));
+        // Update word index based on current position
+        if (i >= 8 && i < 16) setCurrentWordIndex(1); // Create
+        else if (i >= 16) setCurrentWordIndex(2); // Earn
+        i++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => {
+          navigation.replace("Auth");
+        }, 1500);
+      }
+    }, 120);
+  };
 
   return (
-    <ImageBackground
-      source={{ uri: backgrounds[currentBg] }}
+    <LinearGradient
+      colors={["#010220", "#010220", "#010220"]}
       style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
     >
-      <Animated.View style={[
-        styles.logoContainer, 
-        { 
-          transform: [
-            { scale: logoScale },
-            { scale: pulseAnim }
-          ] 
-        }
-      ]}>
-        <Image source={{ uri: logo }} style={styles.logoImage} />
-        <Animated.View style={[styles.glow, { opacity: glowAnim }]} />
+      {/* Logo */}
+      <Image
+        source={{ uri: "https://ik.imagekit.io/ynb2ey9lj/2B7A09A6-5317-44A9-AE61-3E97D7F95293.PNG?updatedAt=1752848606601" }}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
+      {/* Klaape */}
+      <Text style={styles.title}>Klaape</Text>
+
+      {/* What's Klaapening */}
+      <Animated.Text style={[styles.subText, { opacity: text1Opacity }]}>
+        What's Klaapening?
+      </Animated.Text>
+
+      {/* Typing Effect */}
+      <Animated.View style={{ opacity: text2Opacity }}>
+        <Text>
+          <Text style={styles.typingTextYellow}>
+            {typingText.substring(0, 16)}
+          </Text>
+          <Text style={styles.typingTextOrange}>
+            {typingText.substring(16)}
+          </Text>
+        </Text>
       </Animated.View>
-    </ImageBackground>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  logo: {
+    width: width * 0.7,
+    height: height * 0.4,
+    marginBottom: 20,
   },
-  logoImage: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
+  title: {
+    fontSize: 44,
+    fontWeight: "bold",
+    color: "#F7E9C8", // Cream color like your design
+    marginBottom: 12,
   },
-  glow: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    backgroundColor: '#FFD700',
-    opacity: 0.2,
-    zIndex: -1,
+  subText: {
+    fontSize: 20,
+    color: "#F7E9C8",
+    marginTop: 5,
+  },
+  typingTextYellow: {
+    fontSize: 20,
+    color: "#FFD500",
+    fontWeight: "600",
+  },
+  typingTextOrange: {
+    fontSize: 20,
+    color: "#D46E00",
+    fontWeight: "600",
   },
 });

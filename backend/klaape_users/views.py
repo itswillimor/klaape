@@ -1,11 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UserProfile
 from .api.serializers import UserProfileSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
@@ -66,3 +69,48 @@ def upload_profile_image(request, user_id):
         
         serializer = UserProfileSerializer(profile)
         return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def signup(request):
+    print(f"[SIGNUP] Received data: {request.data}")
+    serializer = UserRegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        print(f"[SIGNUP] User created: {user.username}")
+        return Response({
+            'message': 'User created successfully',
+            'user_id': user.id,
+            'username': user.username
+        }, status=status.HTTP_201_CREATED)
+    print(f"[SIGNUP] Validation errors: {serializer.errors}")
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+@csrf_exempt
+def login_user(request):
+    print(f"[LOGIN] Received data: {request.data}")
+    serializer = UserLoginSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        print(f"[LOGIN] Attempting login for: {username}")
+        
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)
+            print(f"[LOGIN] Login successful for: {username}")
+            return Response({
+                'message': 'Login successful',
+                'user_id': user.id,
+                'username': user.username
+            }, status=status.HTTP_200_OK)
+        else:
+            print(f"[LOGIN] Authentication failed for: {username}")
+            return Response({
+                'error': 'Invalid credentials'
+            }, status=status.HTTP_401_UNAUTHORIZED)
+    print(f"[LOGIN] Validation errors: {serializer.errors}")
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
