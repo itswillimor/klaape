@@ -1,0 +1,16 @@
+export default {
+  Primary: '#9747FF',
+  Secondary: '#FFD700',
+  Accent: '#FF00FF',
+  Black: '#000000',
+  White: '#FFFFFF',
+  Background: '#0A0015',
+  ProColor: '#FF00FF',
+  BusinessColor: '#F5B800',
+  RegularColor: '#9747FF',
+  Error: '#FF3B30',
+  Success: '#34C759',
+  Gray: '#8E8E93',
+  LightGray: '#D1D1D6',
+  DarkGray: '#48484A',
+};

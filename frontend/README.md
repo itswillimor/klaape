@@ -1,50 +1,65 @@
-# Welcome to your Expo app 👋
+# Klaape Frontend
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is the frontend for the Klaape platform, built with React Native and Expo.
 
-## Get started
+## Screens
 
-1. Install dependencies
+The app includes the following screens:
 
-   ```bash
+1. **Splash Screen**: Animated intro screen with the Klaape logo
+2. **Auth Screen**: Login and signup functionality
+3. **Email Verification**: 6-digit code verification
+4. **Role Selection**: Choose between Regular User, Pro Creator, or Business
+5. **Profile**: Set up your profile with role-specific fields
+6. **Profile Picture**: Upload and customize your profile picture
+7. **Home**: Main app screen (placeholder)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- Expo CLI
+
+### Installation
+
+1. Install dependencies:
+   ```
    npm install
    ```
 
-2. Start the app
-
-   ```bash
-   npx expo start
+2. Start the development server:
+   ```
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+3. Run on specific platforms:
+   ```
+   npm run ios     # Run on iOS simulator
+   npm run android # Run on Android emulator
+   npm run web     # Run in web browser
+   ```
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Using in GitHub Codespaces
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+When running in GitHub Codespaces, use the following command to start the server:
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 npm start -- --tunnel
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+This will create a tunnel that allows you to access the app from your mobile device using the Expo Go app.
 
-## Learn more
+## Customizing Images
 
-To learn more about developing your project with Expo, look at the following resources:
+To use your own images:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. Replace the placeholder images in the `assets/images` directory
+2. Update the image references in the screens
 
-## Join the community
+## Adding New Screens
 
-Join our community of developers creating universal apps.
+To add a new screen:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Create a new file in the `src/screens` directory
+2. Add the screen to the navigation stack in `src/navigation/AppNavigator.js`

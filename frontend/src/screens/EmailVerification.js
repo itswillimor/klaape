@@ -10,7 +10,6 @@ import {
   Keyboard,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { authAPI } from '../services/api';
 
 const EmailVerification = () => {
   const navigation = useNavigation();
@@ -59,9 +58,6 @@ const EmailVerification = () => {
 
     try {
       setLoading(true);
-      
-      // In a real app, this would call the API
-      // await authAPI.verifyEmail(email, verificationCode);
       
       // For demo purposes, just navigate to role selection
       setTimeout(() => {
